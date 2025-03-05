@@ -21,7 +21,9 @@ const pengajuanSchema = mongoose.Schema({
     enum: ['pending', 'approved', 'reject'],
     default: 'pending',
   },
-  dokumenTTD: String,
+  ttdKonsumen: String,
+  ttdMarketingKonsumen: String,
+  ttdDealer: String,
 });
 
 module.exports = mongoose.model('Pengajuan', pengajuanSchema);
