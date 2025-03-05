@@ -32,6 +32,9 @@
           <th>Harga</th>
           <th>Status</th>
           <th>Action</th>
+          <th>TTD Konsumen</th>
+          <th>TTD Marketing</th>
+          <th>TTD Dealer</th>
         </tr>
       </thead>
       <tbody id="pengajuanList"></tbody>
@@ -55,7 +58,7 @@
             body: JSON.stringify(data),
           });
 
-          location.reload();
+          fetchPengajuan();
         });
 
       async function fetchPengajuan() {
@@ -72,8 +75,33 @@
                         <td>${item.hargaKendaraan}</td>
                         <td>${item.status}</td>
                         <td>
-                            <button onclick="approve('${item._id}')">Approve</button>
-                            <button onclick="reject('${item._id}')">Reject</button>
+                            <button onclick="approve('${
+                              item._id
+                            }')">Approve</button>
+                            <button onclick="reject('${
+                              item._id
+                            }')">Reject</button>
+                        </td>
+                        <td>
+                            ${
+                              item.ttdKonsumen
+                                ? `<img src="${item.ttdKonsumen}" width="50"/>`
+                                : `<button onclick="uploadTTD('${item._id}', 'ttdKonsumen')">Upload</button>`
+                            }
+                        </td>
+                        <td>
+                            ${
+                              item.ttdMarketing
+                                ? `<img src="${item.ttdMarketingKonsumen}" width="50"/>`
+                                : `<button onclick="uploadTTD('${item._id}', 'ttdMarketingKonsumen')">Upload</button>`
+                            }
+                        </td>
+                        <td>
+                            ${
+                              item.ttdDealer
+                                ? `<img src="${item.ttdDealer}" width="50"/>`
+                                : `<button onclick="uploadTTD('${item._id}', 'ttdDealer')">Upload</button>`
+                            }
                         </td>
                     </tr>
                 `;
@@ -92,6 +120,20 @@
           method: 'PUT',
         });
         fetchPengajuan();
+      }
+
+      function uploadTTD(id, field) {
+        const ttdURL = prompt('Masukkan URL tanda tangan:');
+        if (ttdURL) {
+          fetch(`http://localhost:5000/api/pengajuan/ttd/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ field, ttdURL }),
+          })
+            .then((response) => response.json())
+            .then(() => fetchPengajuan())
+            .catch((error) => console.error('Error:', error));
+        }
       }
 
       fetchPengajuan();

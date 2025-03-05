@@ -48,4 +48,28 @@ router.put('/reject/:id', async (req, res) => {
   }
 });
 
+router.put('/ttd/:id', async (req, res) => {
+  try {
+    console.log('Request Body:', req.body); // Debugging
+    const { field, ttdURL } = req.body;
+
+    if (!field || !ttdURL) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Field dan TTD URL diperlukan' });
+    }
+
+    const updatedData = await PengajuanModel.findByIdAndUpdate(
+      req.params.id,
+      { [field]: ttdURL },
+      { new: true }
+    );
+
+    res.json({ success: true, data: updatedData });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;
