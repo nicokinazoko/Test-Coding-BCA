@@ -50,7 +50,6 @@ router.put('/reject/:id', async (req, res) => {
 
 router.put('/ttd/:id', async (req, res) => {
   try {
-    console.log('Request Body:', req.body); // Debugging
     const { field, ttdURL } = req.body;
 
     if (!field || !ttdURL) {
