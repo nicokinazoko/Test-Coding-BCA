@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pengajuan Kredit Motor</title>
+  </head>
+  <body>
+    <h2>Form Pengajuan Kredit</h2>
+    <form id="pengajuanForm">
+      <label>Nama:</label>
+      <input type="text" id="nama" required /><br />
+
+      <label>NIK:</label>
+      <input type="text" id="nik" required /><br />
+
+      <label>Merk Kendaraan:</label>
+      <input type="text" id="merkKendaraan" required /><br />
+
+      <label>Harga Kendaraan:</label>
+      <input type="number" id="hargaKendaraan" required /><br />
+
+      <button type="submit">Ajukan</button>
+    </form>
+
+    <h2>Daftar Pengajuan</h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Merk Kendaraan</th>
+          <th>Harga</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="pengajuanList"></tbody>
+    </table>
+
+    <script>
+      document
+        .getElementById('pengajuanForm')
+        .addEventListener('submit', async function (event) {
+          event.preventDefault();
+          const data = {
+            nama: document.getElementById('nama').value,
+            nik: document.getElementById('nik').value,
+            merkKendaraan: document.getElementById('merkKendaraan').value,
+            hargaKendaraan: document.getElementById('hargaKendaraan').value,
+          };
+
+          await fetch('http://localhost:5000/api/pengajuan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+
+          location.reload();
+        });
+
+      async function fetchPengajuan() {
+        const response = await fetch('http://localhost:5000/api/pengajuan');
+        const data = await response.json();
+        const list = document.getElementById('pengajuanList');
+        list.innerHTML = '';
+
+        data.forEach((item) => {
+          list.innerHTML += `
+                    <tr>
+                        <td>${item.nama}</td>
+                        <td>${item.merkKendaraan}</td>
+                        <td>${item.hargaKendaraan}</td>
+                        <td>${item.status}</td>
+                        <td>
+                            <button onclick="approve('${item._id}')">Approve</button>
+                            <button onclick="reject('${item._id}')">Reject</button>
+                        </td>
+                    </tr>
+                `;
+        });
+      }
+
+      async function approve(id) {
+        await fetch(`http://localhost:5000/api/pengajuan/approve/${id}`, {
+          method: 'PUT',
+        });
+        fetchPengajuan();
+      }
+
+      async function reject(id) {
+        await fetch(`http://localhost:5000/api/pengajuan/reject/${id}`, {
+          method: 'PUT',
+        });
+        fetchPengajuan();
+      }
+
+      fetchPengajuan();
+    </script>
+  </body>
+</html>
